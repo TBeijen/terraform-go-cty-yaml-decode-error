@@ -1,0 +1,4 @@
+name: "some client"
+web_origins:
+  - /foobar
+
