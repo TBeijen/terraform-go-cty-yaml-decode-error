@@ -10,30 +10,23 @@ This originates from go-cty-yaml
 terraform plan
 ```
 
-Error:
+Error example:
 
 ```
-╷
-│ Error: Error in function call
-│
-│   on main.tf line 3, in locals:
-│    3:   yaml_load_test_single = yamldecode(file("sample-error-single-value.yaml"))
+   on main.tf line 28, in output "yaml_decode_test":
+│   28:       inline_error            = yamldecode(local.yaml_inline_sample_error)
 │     ├────────────────
 │     │ while calling yamldecode(src)
+│     │ local.yaml_inline_sample_error is "element: +\nsome_list:\n- foo\n- +\n"
 │
 │ Call to function "yamldecode" failed: cannot parse "+" as tag:yaml.org,2002:int.
 ╵
-╷
-│ Error: Error in function call
-│
-│   on main.tf line 4, in locals:
-│    4:   yaml_load_test_list   = yamldecode(file("sample-error-list-value.yaml"))
-│     ├────────────────
-│     │ while calling yamldecode(src)
-│
-│ Call to function "yamldecode" failed: on line 3, column 5: cannot parse "+" as
-│ tag:yaml.org,2002:int.
-╵
+```
+
+Showing validly parsed YAML:
+
+```sh
+terraform plan -var 'include_errors=false'
 ```
 
 Validating YAML

@@ -1,14 +1,32 @@
-locals {
-  yaml_load_test_ok     = yamldecode(file("sample-ok.yaml"))
-  yaml_load_test_single = yamldecode(file("sample-error-single-value.yaml"))
-  yaml_load_test_list   = yamldecode(file("sample-error-list-value.yaml"))
-
+variable "include_errors" {
+  type    = bool
+  default = true
 }
 
-output "yaml_load_test" {
-  value = {
-    ok     = local.yaml_load_test_ok
-    single = local.yaml_load_test_single
-    list   = local.yaml_load_test_list
-  }
+locals {
+  yaml_inline_sample_ok    = <<-EOT
+            element: "+"
+            some_list:
+            - foo
+        EOT
+  yaml_inline_sample_error = <<-EOT
+            element: +
+            some_list:
+            - foo
+            - +
+        EOT
+}
+
+output "yaml_decode_test" {
+  value = merge(
+    {
+      file_ok   = yamldecode(file("sample-ok.yaml"))
+      inline_ok = yamldecode(local.yaml_inline_sample_ok)
+    },
+    (var.include_errors == true ? {
+      inline_error            = yamldecode(local.yaml_inline_sample_error)
+      file_error_single_value = yamldecode(file("sample-error-single-value.yaml"))
+      file_error_list_value   = yamldecode(file("sample-error-list-value.yaml"))
+    } : {})
+  )
 }
